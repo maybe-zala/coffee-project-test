@@ -1,9 +1,24 @@
-{%extends 'base.html'%}
-{%load static%}
-{%block content%}
+<!DOCTYPE html>
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
 
-    <div>
-        <h1>Storefront Page </h1>
+<div>
+    <h1>Welcome to Our Coffee Shop</h1>
+</div>
+
+<div>
+    <h2>Our Menu</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 20px;">
+        {% for item in coffee_items %}
+        <div style="border: 1px solid #ccc; padding: 20px; cursor: pointer;" onclick="window.location.href='{% url 'item_detail' item.id %}'">            <h3>{{ item.name }}</h3>
+            <p>{{ item.description }}</p>
+            <p>Price: ${{ item.price }}</p>
+        </div>
+        {% endfor %}
     </div>
-    <a href="{%url 'logout'%}">Logout</a>
-{%endblock content%}
+</div>
+
+<a href="{% url 'logout' %}">Logout</a>
+
+{% endblock content %}
