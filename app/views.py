@@ -1,56 +1,59 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.http.response import HttpResponse
+from django.http.request import HttpRequest
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
-
-def index(request):
+def index_view(request:HttpRequest)-> HttpResponse:
     return render(request, "index.html")
 
-class InventoryListView(ListView):
-    template_name = "inventory.html"
-    model = Inventory
-    context_object_name = "inventory_list"
+def storefront_page(request:HttpRequest)-> HttpResponse:
+    return render(request, "storefront.html")
 
-class MenuListView(ListView):
-    template_name = "menu.html"
-    model = Product
-    context_object_name = "menu_list"
+def register_view(request):
+    if request.method == "POST":
+        username = request.POST["username"]
+        email = request.POST["email"]
+        password = request.POST["password"]
 
-class InventoryUpdateView(UpdateView):
-    model = Inventory
-    template_name = "inventory_update.html"
-    form_class = InventoryUpdateForm
-    context_object_name = "inventory_update"
+        if User.objects.filter(username=username).exists():
+            return render(request, "register.html", {
+                "error": "Username already taken."
+            })
 
-class InventoryCreateView(CreateView):
-    model = Inventory
-    template_name = "inventory_create.html"
-    form_class = InventoryCreateForm
-    context_object_name = "inventory_create"
+        if User.objects.filter(email=email).exists():
+            return render(request, "register.html", {
+                "error": "Email already used."
+            })
 
-class ProductCreateView(CreateView):
-    model = Product
-    template_name = "menu_create.html"
-    form_class = ProductCreateForm
-    context_object_name = "menu_create"
+        User.objects.create_user(
+            username=username,
+            email=email,
+            password=password
+        )
 
-class RecipeRequirementListView(ListView):
-    template_name = "recipe.html"
-    model = RecipeRequirement
-    context_object_name = "recipe_list"
+        return redirect("login")
 
-class RecipeRequirementCreateView(CreateView):
-    model = RecipeRequirement
-    template_name = "recipe_create.html"
-    form_class = RecipeCreateForm
-    context_object_name = "recipe_create"
+    return render(request, "register.html")
 
-class PurchaseListView(ListView):
-    template_name = "purchase.html"
-    model = Purchase
-    context_object_name = "purchase_list"
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get("username")
+        password = request.POST.get("password")
 
-class PurchaseCreateView(CreateView):
-    model = Purchase
-    template_name = "purchase_create.html"
-    form_class = PurchaseCreateForm
-    context_object_name = "purchase_create"
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)  
+            return redirect("storefront")  
+        else:
+            return render(request, "login.html", {
+                "error": "Invalid username or password."
+            })
+
+    return render(request, "login.html")
+
+def logout_view(request):
+    logout(request)
+    return redirect('login')

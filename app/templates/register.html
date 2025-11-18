@@ -1,0 +1,30 @@
+{%extends 'base.html'%}
+{%load static%}
+    {%block content%}
+    <div class="content">
+        <div class="login-form">
+            <svg width="200" height="200" style="margin-bottom: 10%;" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="256" cy="256" r="256" fill="#FEFAE0"/>
+            <circle cx="256" cy="180" r="100" fill="#A6B37D"/>
+            <path d="M256 290c-90 0-163 60-163 133h326c0-73-73-133-163-133z" fill="#A6B37D"/>
+            </svg>
+            {% if error %}
+            <p style="color:red; background-color:black;">{{ error }}</p>
+            {% endif %}
+            <form method="post" id="login-form" action="{% url 'register'%}" >
+                {% csrf_token %}
+
+                <div class="form">
+                    <input type="text" id="username" class="input" placeholder="Username" name="username" required>
+                    <input type="email" name="email" class="input" placeholder="Email" id="email" required>
+                    <input type="password" id="password" class="input" placeholder="Password" name="password" required>
+                </div>
+            </form>
+                <button type="submit" form="login-form" class="button">Register</button>
+
+            <a href="{%url 'login'%}" class="link" style="font-size:18px;">Login</a>
+        </div>
+
+
+    </div>
+    {%endblock content%}
